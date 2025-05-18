@@ -1,11 +1,11 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Zalendo VS backend",
+  "description": "Zalendo API",
   "license": "ISC",
   "author": "Dev-Romm",
   "type": "module",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
     "server": "node --watch --trace-warnings --env-file=server/.env server/server.js",
