@@ -21,7 +21,13 @@ jobs:
           node-version: "22.x"
           cache: "npm"
 
-      # 2. Server Installation
+      # 2. Authenticate with Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 3. Server Installation
       - name: Install Server Dependencies
         run: |
           find . -name 'node_modules' -exec rm -rf {} +
@@ -30,7 +36,7 @@ jobs:
           npm ci --no-bin-links --legacy-peer-deps
           npm install
 
-      # 3. Client Installation & Build
+      # 4. Client Installation & Build
       - name: Install Client Dependencies
         run: |
           cd client
@@ -45,7 +51,7 @@ jobs:
           test -f dist/index.html || (echo "Build failed" && exit 1)
           cd ..
 
-      # 4. Prepare Deployment Package
+      # 5. Prepare Deployment Package
       - name: Create Deployment Bundle
         run: |
           mkdir -p deployment
@@ -54,19 +60,15 @@ jobs:
           mkdir -p deployment/client/dist
           cp -r client/dist/* deployment/client/dist/
 
-          # Linux-specific startup
           echo "#!/bin/sh" > deployment/startup.sh
           echo "cd /home/site/wwwroot" >> deployment/startup.sh
           echo "npm ci --production" >> deployment/startup.sh
           echo "node server/server.js" >> deployment/startup.sh
           chmod +x deployment/startup.sh
 
-          # Windows-compatible command (fallback)
-          echo "npm ci --production && node server/server.js" > deployment/startup.cmd
-
           zip -r release.zip deployment
 
-      # 5. Deploy
+      # 6. Deploy
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -81,16 +83,17 @@ jobs:
           package: deployment
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_108B0C94D58C44839A2CA418B2D18AEE }}
 
-      # 6. Post-Deploy Configuration (Critical Fix)
-      - name: Set Startup Command
+      # 7. Post-Deploy Configuration
+      - name: Configure Azure App
         run: |
           az webapp config set \
             --name zalendovs \
             --resource-group zalendovs_group \
             --startup-file "bash startup.sh" \
             --linux-fx-version "NODE|22-lts"
+          az webapp restart --name zalendovs --resource-group zalendovs_group
 
-      # 7. Verification
+      # 8. Verification
       - name: Health Check
         run: |
           sleep 60
