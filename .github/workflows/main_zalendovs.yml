@@ -1,4 +1,4 @@
-name: Build and deploy Node.js app to Azure Web App - zalendo-voting-system
+name: Build and deploy Node.js app to Azure Web App - zalendovs
 
 on:
   push:
@@ -12,54 +12,48 @@ jobs:
     permissions:
       contents: read
     env:
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=4096  # Memory limit fix
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
-          cache: 'npm'
+          cache: 'npm'  # Cache dependencies for faster builds
 
-      # Server installation (from root)
-      - name: Install server dependencies
-        run: npm ci
-
-      # Client installation and build
-      - name: Install client dependencies
+      - name: Clean install dependencies
         run: |
-          cd client
+          rm -rf node_modules
           npm ci
-        env:
-          NODE_OPTIONS: --max-old-space-size=4096
+          cd client && npm ci
 
       - name: Build client
         run: |
-          cd client
-          npm run build
+          cd client && npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
-      # Prepare deployment package
-      - name: Create deployment package
+      - name: Create optimized deployment package
         run: |
-          # Create minimal deployment folder
+          # Create clean deployment structure
           mkdir -p deployment
           
-          # 1. Copy server files
-          cp -r server deployment/
+          # Copy server files
           cp package*.json deployment/
+          cp -r server deployment/
           
-          # 2. Copy built client (just the dist folder)
+          # Copy built client files
           mkdir -p deployment/client
           cp -r client/dist deployment/client/
           
-          # 3. Install only production deps
-          cd deployment
-          npm ci --production
+          # Create .env with Azure required settings
+          echo "PORT=8080" > deployment/.env
+          echo "NODE_ENV=production" >> deployment/.env
           
-          # Create zip (excluding hidden files)
-          zip -r ../release.zip . -x ".*" -x "__MACOSX"
+          # Create zip package
+          cd deployment && zip -r ../release.zip .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -73,7 +67,7 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
+    
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -82,13 +76,20 @@ jobs:
 
       - name: Unzip artifact
         run: |
+          mkdir -p deployment
           unzip -q release.zip -d deployment
 
-      - name: Deploy to Azure
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'zalendo-voting-system'
+          app-name: 'zalendovs'
           slot-name: 'Production'
-          package: .
+          package: deployment
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_108B0C94D58C44839A2CA418B2D18AEE }}
+
+      - name: Verify deployment
+        run: |
+          echo "Checking if app is live..."
+          sleep 30  # Wait for app to start
+          curl -s ${{ steps.deploy-to-webapp.outputs.webapp-url }} | grep -q "YourAppContent" || exit 1
