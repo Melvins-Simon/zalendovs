@@ -1,0 +1,122 @@
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  height: 80%;
+  background-color: #f0f0f0;
+}
+
+.admin-container h2 {
+  font-size: 2em;
+  color: #1ee014;
+  margin-bottom: 0;
+}
+
+.admin-container p {
+  font-size: 1.2em;
+  color: #000;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.admin-container button {
+  width: 240px;
+  padding: 10px;
+  border: 2px solid #1ee014;
+  display: block;
+  margin: 0.5% auto;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #1ee014;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.admin-container button:hover {
+  background-color: #fff;
+  color: #1ee014;
+  transform: scale(1.05);
+}
+
+.admin-form label {
+  font-size: 1.2em;
+  color: #000;
+  margin-bottom: 5px;
+
+  margin-left: 0px;
+}
+.admin-radio-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.admin-radio-group label {
+  font-size: 1.2em;
+  color: #000;
+  margin-bottom: 5px;
+
+  margin-right: 0px;
+}
+.admin-radio-group input[type="radio"] {
+  width: 80px;
+  padding: 10px;
+  border: 2px solid #1ee014;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #000;
+  background-color: #fff;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+.admin-radio-group input[type="radio"]:hover {
+  border-color: #1ee014;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.admin-form select {
+  width: 70%;
+  padding: 10px;
+  border: 2px solid #1ee014;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #000;
+  background-color: #fff;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+.admin-form select:focus {
+  border-color: #1ee014;
+  transform: scale(1.02);
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.btn-group button {
+  width: 120px;
+  border: 2px solid #1ee014;
+  background-color: #17ab0f;
+}
+.btn-group button:hover {
+  background-color: #fff;
+  color: #189811;
+  transform: scale(1.05);
+}
+.btn-group button:last-of-type {
+  color: #c80b0b;
+}
+.timeline{
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 1.4em;
+  color: #000;
+  margin-bottom: 2%;
+}

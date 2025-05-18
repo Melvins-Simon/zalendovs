@@ -1,0 +1,75 @@
+.voter-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f0f0f0;
+  height: 80%;
+}
+.voter-container h2 {
+  font-size: 2rem;
+  color: #1ee014;
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+.voter-container p {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+  color: #000;
+}
+.aspirant-group {
+  width: 30%;
+  display: flex;
+  flex-direction: row;
+
+  gap: 10px;
+  margin-top: 0;
+}
+.aspirant {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 2px solid #1ee014;
+  border-radius: 5px;
+  width: 100%;
+  padding: 8px;
+  background-color: #fff;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.aspirant p {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 0px;
+  font-size: 1.5rem;
+}
+
+.voter-container button {
+  width: 240px;
+  padding: 10px;
+  border: 2px solid #1ee014;
+  display: block;
+  margin: 0.5% auto;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #1ee014;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.voter-container button:hover {
+  background-color: #fff;
+  color: #1ee014;
+  transform: scale(1.05);
+}
+.voter-btn-group button:last-of-type {
+    color: #c80b0b;
+}
+.voter-btn-group button{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

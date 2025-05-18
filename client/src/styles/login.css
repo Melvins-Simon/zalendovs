@@ -1,0 +1,133 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  height: 80vh;
+  background-color: #f0f0f0;
+}
+
+.login-logo-container {
+  margin-top: 0;
+}
+.logo {
+  width: 600px;
+  height: 550px;
+  border-radius: 50%;
+  border: 2px solid #1ee014;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+  left: -35%;
+  top: 10%;
+}
+
+.login-details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 92%;
+  padding: 0 20px;
+  text-align: center;
+  border-radius: 15px;
+  border: 2px solid #28a745;
+  margin-top: 1.5%;
+  background: linear-gradient(145deg, #e9f5ec, #c8e6d8);
+}
+.login-details-container h2 {
+  font-size: 2rem;
+  color: #1ee014;
+  margin-bottom: 0;
+}
+.login-details-container p {
+  font-size: 1.2rem;
+  color: #000;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2%;
+}
+.login-form button {
+  width: 250px;
+  padding: 10px;
+  border: 2px solid #1ee014;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #1ee014;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.login-form button:hover {
+  background-color: #fff;
+  color: #1ee014;
+  transform: scale(1.05);
+}
+.login-form button:active {
+  transform: scale(0.95);
+}
+.login-form label,
+.login-form span {
+  font-size: 1.2rem;
+  color: #000;
+  margin-bottom: 5px;
+  text-align: left;
+  margin-right: 20px;
+}
+
+#loginemail,
+#loginpassword {
+  width: 250px;
+  padding: 10px;
+  border: 2px solid #1ee014;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #000;
+  background-color: #fff;
+}
+#loginemail:focus,
+#loginpassword:focus {
+  outline: none;
+  border-color: #1ee014;
+  box-shadow: 0 0 5px rgba(30, 224, 20, 0.5);
+}
+
+#loginemail {
+  margin-left: 35px;
+}
+
+.login-form input[type="radio"] {
+  margin-right: 15px;
+  cursor: pointer;
+  background-color: #1c4cce;
+
+  width: 20px;
+  height: 20px;
+}
+
+.login-form input[type="radio"]:checked {
+  background-color: #1ee014;
+  border: 2px solid #1ee014;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    height: 100vh;
+    flex-direction: column;
+    align-items: center;
+  }
+  .logo {
+    width: 60%;
+    height: 40%;
+    left: 0;
+    top: 40%;
+  }
+  .login-details-container {
+    width: 80%;
+    padding: 20px;
+    margin-top: 5px;
+  }
+}

@@ -1,0 +1,85 @@
+.reg-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+    background-color: #f0f0f0;
+}
+.reg-container h2{
+    font-size: 2rem;
+    color: #1ee014;
+    margin-bottom: 5px;
+}
+.reg-container p{
+    font-size: 1.2rem;
+    color: #000;
+}
+.reg-form{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 0;
+}
+.reg-form button{
+    width: 250px;
+    padding: 10px;
+    border: 2px solid #1ee014;
+    display: block;
+    margin: 2% auto;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #1ee014;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.reg-form button:hover{
+    background-color: #fff;
+    color: #1ee014;
+    transform: scale(1.05);
+}
+.reg-form input{
+    width: 250px;
+    padding: 10px;
+    border: 2px solid #1ee014;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #000;
+    background-color: #fff;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+.reg-form input:focus{
+    border-color: #1ee014;
+    transform: scale(1.02);
+}
+.reg-form label{
+    font-size: 1.2rem;
+    color: #000;
+    margin-bottom: 5px;
+    text-align: left;
+    margin-right: 30px;
+}
+.reg-form select{
+    width: 273px;
+    padding: 10px;
+    border: 2px solid #1ee014;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #000;
+    background-color: #fff;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+.reg-form select:focus{
+    border-color: #1ee014;
+    transform: scale(1.02);
+}
+
+.reg-form-group{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 0;
+}
