@@ -2,9 +2,13 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import "../styles/register.css";
+import { useContext } from "react";
+import { ElectionContext } from "../contexts/Globalcontext";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { API_URL } = useContext(ElectionContext);
+
   async function handleRegistration(event) {
     event.preventDefault(); // Prevent the default form submission behavior
 
@@ -14,8 +18,7 @@ export default function Register() {
     const password = event.target.password.value;
     const faculty = event.target.faculty.value;
     const regno = event.target.regno.value;
-    const API_URL = process.env.REACT_APP_API_URL;
-    
+
     try {
       const response = await axios.post(`${API_URL}/api/signup`, {
         firstname,

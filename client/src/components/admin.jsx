@@ -18,10 +18,9 @@ export default function Admin() {
     setEndTime,
     userDetails,
     setUserDetails,
+    API_URL,
   } = useContext(ElectionContext);
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_URL;
-
 
   function handleAddElection(event) {
     // Logic to add an election
@@ -37,7 +36,7 @@ export default function Admin() {
       alert("Please select an election type.");
     }
   }
- 
+
   function handleElectionChange(event) {
     // Logic to handle election type change
     const value = event.target.value;
@@ -61,12 +60,12 @@ export default function Admin() {
       confirmButtonText: "Yes, log out!",
       cancelButtonText: "No, stay logged in!",
     });
-  
+
     if (result.isConfirmed) {
-    console.log("Logging out.");
-    setUserDetails(null); // Clear user details from context
-    navigate("/");
-    toast.success("Logged out successfully!");
+      console.log("Logging out.");
+      setUserDetails(null); // Clear user details from context
+      navigate("/");
+      toast.success("Logged out successfully!");
     }
   }
   async function handleReset() {
@@ -82,10 +81,7 @@ export default function Admin() {
     console.log("Resetting election results.");
     if (result.isConfirmed) {
       try {
-        const response = await axios.post(
-          `${API_URL}/api/reset`,
-          {}
-        );
+        const response = await axios.post(`${API_URL}/api/reset`, {});
         console.log("Reset response:", response.data);
         toast.success("Results reset successfully!");
       } catch (error) {
@@ -93,7 +89,6 @@ export default function Admin() {
         toast.error("Error resetting results.");
       }
     }
-   
   }
   return (
     <div className="admin-container">

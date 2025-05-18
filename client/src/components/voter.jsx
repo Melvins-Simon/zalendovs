@@ -16,6 +16,7 @@ export default function Voter() {
     setHasVoted,
     startTime,
     endTime,
+    API_URL,
   } = useContext(ElectionContext);
 
   const [facultyReps, setFacultyReps] = useState([]);
@@ -23,7 +24,6 @@ export default function Voter() {
   const [delegates, setDelegates] = useState([]);
   const [electionName, setElectionName] = useState("");
   const [loading, setLoading] = useState(true);
-  const API_URL = process.env.REACT_APP_API_URL;
 
   console.log(endTime, startTime);
   async function handleVoting(candidateId) {
@@ -90,9 +90,7 @@ export default function Voter() {
         if (userDetails?.hasVoted !== undefined) {
           setHasVoted(userDetails.hasVoted); // Update hasVoted when userDetails changes
         }
-        const response = await axios.get(
-          `${API_URL}/api/${electionType}`
-        );
+        const response = await axios.get(`${API_URL}/api/${electionType}`);
         if (electionType === "facultyreps") {
           setElectionName("Faculty Reps");
           setFacultyReps(response.data?.aspirants);

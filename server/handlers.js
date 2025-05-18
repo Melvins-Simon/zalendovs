@@ -1,5 +1,12 @@
 import { response } from "express";
-import { voters, admins, facultyReps, delegates, classReps, reviews } from "./tables.js";
+import {
+  voters,
+  admins,
+  facultyReps,
+  delegates,
+  classReps,
+  reviews,
+} from "./tables.js";
 import { comparePassword, hashPassword } from "./helpers.js";
 
 async function register(req, res) {
@@ -9,9 +16,7 @@ async function register(req, res) {
     if (!firstname || !lastname || !email || !password || !faculty || !regno) {
       return res.status(400).json({ message: "Input all required details" });
     }
-    console.log(111111111);
     const user = await voters.findOne({ email });
-    console.log(222222222);
     if (user) {
       return res.status(400).json({ message: "Email already exits" });
     }
@@ -26,14 +31,12 @@ async function register(req, res) {
       faculty,
       regno,
     });
-    
+
     const registered_user = await newuser.save();
-    res
-      .status(200)
-      .json({
-        message: "User Registered Successfully!!!",
-        registered_user: { ...registered_user._doc, password: undefined },
-      });
+    res.status(200).json({
+      message: "User Registered Successfully!!!",
+      registered_user: { ...registered_user._doc, password: undefined },
+    });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
@@ -45,9 +48,10 @@ async function login(req, res) {
   try {
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
-
 
     // Determine the model based on the category
     let model;
@@ -77,7 +81,7 @@ async function login(req, res) {
 
     res.status(200).json({
       message: "Login successful",
-      user: userWithoutPassword
+      user: userWithoutPassword,
     });
   } catch (error) {
     console.error("Error during login:", error);
@@ -87,17 +91,19 @@ async function login(req, res) {
 
 async function recordReview(req, res) {
   const { name, rating, review } = req.body;
-  try { 
+  try {
     if (!name || !rating || !review) {
       return res.status(400).json({ message: "Input all required details" });
     }
     const newReview = new reviews({
       name,
       rating,
-      review
+      review,
     });
     const savedReview = await newReview.save();
-    res.status(200).json({ message: "Review recorded successfully", savedReview });
+    res
+      .status(200)
+      .json({ message: "Review recorded successfully", savedReview });
   } catch (error) {
     console.error("Error recording review:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -132,8 +138,8 @@ async function getResults(req, res) {
 async function getReviews(req, res) {
   try {
     const reviewsList = await reviews.find();
-    res.status(200).json({ reviews: reviewsList }); 
-  }catch (error) {
+    res.status(200).json({ reviews: reviewsList });
+  } catch (error) {
     console.error("Error fetching reviews:", error);
     res.status(500).json({ message: "Internal server error" });
   }
@@ -203,18 +209,15 @@ async function updateVotes(req, res) {
     // Mark the user as having voted
     user.hasVoted = true;
     await user.save();
-    
-    res
-      .status(200)
-      .json({
-        message: "Vote updated successfully",
-        aspirant: updatedAspirant
-      });
+
+    res.status(200).json({
+      message: "Vote updated successfully",
+      aspirant: updatedAspirant,
+    });
   } catch (error) {
     console.error("Error updating vote:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-
 }
 
 async function resetResults(req, res) {
@@ -227,7 +230,9 @@ async function resetResults(req, res) {
     // Reset hasVoted for all voters
     await voters.updateMany({}, { $set: { hasVoted: false } });
 
-    res.status(200).json({ message: "Results and voting status reset successfully" });
+    res
+      .status(200)
+      .json({ message: "Results and voting status reset successfully" });
   } catch (error) {
     console.error("Error resetting results:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -244,5 +249,5 @@ export {
   getReviews,
   getResults,
   resetResults,
-  login
+  login,
 };

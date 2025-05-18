@@ -8,40 +8,64 @@ import path from "path";
 import "colors";
 import { logText } from "./loG.text.js";
 
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config({ path: "server/.env" });
-}
+// Load environment variables
+dotenv.config({ path: "server/.env" });
 
 const app = express();
+
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// CORS Configuration
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5002",
+  "http://localhost:5173",
+  "https://zalendovs-ffcydkb2c9f8dxb4.canadacentral-01.azurewebsites.net",
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: [
-      process.env.clientUrl ||
-        "https://zalendo-voting-system-b4gheqdgahdqf2gq.eastus-01.azurewebsites.net",
-      "http://localhost:5002",
-      "http://localhost:5173",
-    ],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   })
 );
 
+// Path configuration
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// API Routes
 app.use("/api", router);
 
-app.use(express.static(path.join(__dirname, "../client/dist"))); // Serve static files from the React app
+// Static files and SPA fallback
+app.use(express.static(path.join(__dirname, "../client/dist")));
 
 app.get("/*splat", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
-app.listen(process.env.port, async () => {
+// Server startup
+const PORT = process.env.port || 8080; // Azure uses PORT environment variable
+
+const startServer = async () => {
   try {
-    logText();
     await mongoose.connect(process.env.mongoUrl);
-    console.log("-----✅ Database connected successfully.");
+
+    app.listen(PORT, () => {
+      logText();
+    });
   } catch (error) {
-    console.log(error);
+    console.error("❌ Database connection failed".red, error);
+    process.exit(1);
   }
-});
+};
+
+startServer();

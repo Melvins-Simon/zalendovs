@@ -26,4 +26,5 @@ export const logText = () => {
       ? process.env.productiontUrl.blue.underline
       : `http://localhost:${process.env.port}/`.blue.underline
   );
+  console.log("✅ Database connected successfully".green);
 };

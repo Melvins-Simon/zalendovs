@@ -9,8 +9,7 @@ export default function Results() {
   // State to hold the election results
   const [results, setResults] = useState([]);
   const [electionName, setElectionName] = useState("");
-  const { electionType } = useContext(ElectionContext);
-  const API_URL = process.env.REACT_APP_API_URL;
+  const { electionType, API_URL } = useContext(ElectionContext);
   const faculties = [
     "Computing and Information Technology",
     "Engineering",
@@ -72,11 +71,11 @@ export default function Results() {
           </div>
         ))}
       </div>
-      
+
       <button className="reload-button" onClick={fetchResults}>
         <FontAwesomeIcon icon={faRedo} /> Reload for Latest Results
       </button>
-      
+
       <button className="back-button" onClick={() => window.history.back()}>
         Back to Dashboard
       </button>

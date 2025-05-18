@@ -8,7 +8,7 @@ import "../styles/login.css";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { userDetails, setUserDetails } = useContext(ElectionContext);
+  const { userDetails, setUserDetails, API_URL } = useContext(ElectionContext);
 
   async function handleLogin(event) {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -16,7 +16,8 @@ export default function Login() {
     const email = event.target.email.value;
     const password = event.target.password.value;
     const category = event.target.category.value;
-    const API_URL = process.env.REACT_APP_API_URL;
+    console.log();
+
     console.log(API_URL);
     try {
       // Make a POST request to the login API

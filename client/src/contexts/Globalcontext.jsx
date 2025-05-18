@@ -47,10 +47,13 @@ export function ElectionProvider({ children }) {
   useEffect(() => {
     localStorage.setItem("hasVoted", JSON.stringify(hasVoted));
   }, [hasVoted]);
-
-  return (
+  // const API_URL = "http://localhost:5002";
+  const API_URL =
+    "https://zalendovs-ffcydkb2c9f8dxb4.canadacentral-01.azurewebsites.net";
+  https: return (
     <ElectionContext.Provider
       value={{
+        API_URL,
         electionType,
         setElectionType,
         userDetails,
