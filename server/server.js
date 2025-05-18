@@ -53,11 +53,11 @@ app.get("/*splat", (req, res) => {
 });
 
 // Server startup
-const PORT = process.env.port || 8080; // Azure uses PORT environment variable
+const PORT = process.env.PORT || 8080; // Azure uses PORT environment variable
 
 const startServer = async () => {
   try {
-    await mongoose.connect(process.env.mongoUrl);
+    await mongoose.connect(process.env.MONGO_URI);
 
     app.listen(PORT, () => {
       logText();

@@ -23,8 +23,8 @@ export const logText = () => {
   console.log(
     `-----🚀 Server running on --> `,
     process.env.NODE_ENV === "production"
-      ? process.env.productiontUrl.blue.underline
-      : `http://localhost:${process.env.port}/`.blue.underline
+      ? process.env.PRODUCTION_URL.blue.underline
+      : `http://localhost:${process.env.PORT}/`.blue.underline
   );
   console.log("✅ Database connected successfully".green);
 };
