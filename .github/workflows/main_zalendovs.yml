@@ -42,6 +42,7 @@ jobs:
       - name: Build Client
         run: |
           cd client
+          npm install
           npm run build
           # Verify build output exists
           test -f dist/index.html || (echo "Build failed - no index.html" && exit 1)
