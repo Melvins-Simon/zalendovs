@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - zalendovs
+name: Build and deploy Node.js app to Azure Web App - zalendo-voting-system
 
 on:
   push:
@@ -13,26 +10,58 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
+          cache: 'npm'
 
-      - name: npm install, build, and test
+      # Server installation (from root)
+      - name: Install server dependencies
+        run: npm ci
+
+      # Client installation and build
+      - name: Install client dependencies
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          cd client
+          npm ci
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+      - name: Build client
+        run: |
+          cd client
+          npm run build
 
-      - name: Upload artifact for deployment job
+      # Prepare deployment package
+      - name: Create deployment package
+        run: |
+          # Create minimal deployment folder
+          mkdir -p deployment
+          
+          # 1. Copy server files
+          cp -r server deployment/
+          cp package*.json deployment/
+          
+          # 2. Copy built client (just the dist folder)
+          mkdir -p deployment/client
+          cp -r client/dist deployment/client/
+          
+          # 3. Install only production deps
+          cd deployment
+          npm ci --production
+          
+          # Create zip (excluding hidden files)
+          zip -r ../release.zip . -x ".*" -x "__MACOSX"
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
@@ -44,21 +73,22 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-      
-      - name: 'Deploy to Azure Web App'
+      - name: Unzip artifact
+        run: |
+          unzip -q release.zip -d deployment
+
+      - name: Deploy to Azure
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'zalendovs'
+          app-name: 'zalendo-voting-system'
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_108B0C94D58C44839A2CA418B2D18AEE }}
