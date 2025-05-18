@@ -1,3 +1,5 @@
+name: Build and Deploy to Azure
+
 on:
   push:
     branches: [main]
@@ -22,15 +24,11 @@ jobs:
       # 2. Server Installation
       - name: Install Server Dependencies
         run: |
-          # Clean environment
           find . -name 'node_modules' -exec rm -rf {} +
-
-          # Install build tools
           sudo apt-get update
           sudo apt-get install -y build-essential python3
-
-          # Install server deps
           npm ci --no-bin-links --legacy-peer-deps
+          npm install
 
       # 3. Client Installation & Build
       - name: Install Client Dependencies
@@ -44,38 +42,31 @@ jobs:
           cd client
           npm install
           npm run build
-          # Verify build output exists
-          test -f dist/index.html || (echo "Build failed - no index.html" && exit 1)
+          test -f dist/index.html || (echo "Build failed" && exit 1)
           cd ..
 
       # 4. Prepare Deployment Package
       - name: Create Deployment Bundle
         run: |
           mkdir -p deployment
-
-          # Copy server files
           cp -r server deployment/
           cp package*.json deployment/
-
-          # Copy built client
           mkdir -p deployment/client/dist
           cp -r client/dist/* deployment/client/dist/
 
-          # Azure configuration
-          echo "PORT=8080" > deployment/.env
-          echo "NODE_ENV=production" >> deployment/.env
-
-          # Startup script
+          # Linux-specific startup
           echo "#!/bin/sh" > deployment/startup.sh
           echo "cd /home/site/wwwroot" >> deployment/startup.sh
           echo "npm ci --production" >> deployment/startup.sh
           echo "node server/server.js" >> deployment/startup.sh
           chmod +x deployment/startup.sh
 
-          # Create zip
-          cd deployment && zip -r ../release.zip .
+          # Windows-compatible command (fallback)
+          echo "npm ci --production && node server/server.js" > deployment/startup.cmd
 
-      # 5. Deploy (Updated artifact actions)
+          zip -r release.zip deployment
+
+      # 5. Deploy
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -87,14 +78,21 @@ jobs:
         with:
           app-name: "zalendovs"
           slot-name: "Production"
-          package: .
+          package: deployment
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_108B0C94D58C44839A2CA418B2D18AEE }}
-          startup-command: "bash startup.sh"
 
-      # 6. Verification
+      # 6. Post-Deploy Configuration (Critical Fix)
+      - name: Set Startup Command
+        run: |
+          az webapp config set \
+            --name zalendovs \
+            --resource-group zalendovs_group \
+            --startup-file "bash startup.sh" \
+            --linux-fx-version "NODE|22-lts"
+
+      # 7. Verification
       - name: Health Check
         run: |
-          echo "Waiting for app to start..."
-          sleep 45  # Extended timeout
+          sleep 60
           curl -sSf ${{ steps.deploy-to-webapp.outputs.webapp-url }}/health || \
-            (echo "Health check failed"; exit 1)
+            (az webapp log download --name zalendovs --resource-group zalendovs_group && exit 1)
