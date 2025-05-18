@@ -1,95 +1,101 @@
-name: Build and deploy Node.js app to Azure Web App - zalendovs
+name: Build and Deploy to Azure
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: --max-old-space-size=4096
 
     steps:
+      # 1. Initial Setup
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "22.x"
           cache: "npm"
 
-      - name: Clean install
+      # 2. Server Installation
+      - name: Install Server Dependencies
         run: |
+          # Clean environment
           find . -name 'node_modules' -exec rm -rf {} +
-          npm ci --no-bin-links
-          cd client && npm ci --no-bin-links
 
-      - name: Build client
-        run: |
-          cd client && npm run build
+          # Install build tools
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3
 
-      - name: Create deployment package
+          # Install server deps
+          npm ci --no-bin-links --legacy-peer-deps
+
+      # 3. Client Installation & Build
+      - name: Install Client Dependencies
         run: |
-          # Create minimal production package
+          cd client
+          npm ci --no-bin-links --legacy-peer-deps --include=dev
+          cd ..
+
+      - name: Build Client
+        run: |
+          cd client
+          npm run build
+          # Verify build output exists
+          test -f dist/index.html || (echo "Build failed - no index.html" && exit 1)
+          cd ..
+
+      # 4. Prepare Deployment Package
+      - name: Create Deployment Bundle
+        run: |
           mkdir -p deployment
 
-          # 1. Server files
+          # Copy server files
           cp -r server deployment/
           cp package*.json deployment/
 
-          # 2. Client files (only dist)
+          # Copy built client
           mkdir -p deployment/client/dist
           cp -r client/dist/* deployment/client/dist/
 
-          # 3. Azure required files
+          # Azure configuration
           echo "PORT=8080" > deployment/.env
           echo "NODE_ENV=production" >> deployment/.env
 
-          # 4. Create startup script
+          # Startup script
           echo "#!/bin/sh" > deployment/startup.sh
           echo "cd /home/site/wwwroot" >> deployment/startup.sh
           echo "npm ci --production" >> deployment/startup.sh
           echo "node server/server.js" >> deployment/startup.sh
           chmod +x deployment/startup.sh
 
-          zip -r release.zip deployment
+          # Create zip
+          cd deployment && zip -r ../release.zip .
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      # 5. Deploy
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: node-app
+          name: app
           path: release.zip
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: "Production"
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app
-
-      - name: Unzip artifact
-        run: unzip -q release.zip -d deployment
-
       - name: Deploy to Azure
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
           app-name: "zalendovs"
           slot-name: "Production"
-          package: deployment
+          package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_108B0C94D58C44839A2CA418B2D18AEE }}
-          startup-command: "bash startup.sh" # Critical addition
+          startup-command: "bash startup.sh"
 
-      - name: Verify deployment
+      # 6. Verification
+      - name: Health Check
         run: |
           echo "Waiting for app to start..."
-          sleep 60  # Increased wait time
-          curl -sSf ${{ steps.deploy-to-webapp.outputs.webapp-url }}/health || (echo "Deployment failed"; exit 1)
+          sleep 45  # Extended timeout
+          curl -sSf ${{ steps.deploy-to-webapp.outputs.webapp-url }}/health || \
+            (echo "Health check failed"; exit 1)
