@@ -50,7 +50,7 @@ export function ElectionProvider({ children }) {
   // const API_URL = "http://localhost:5002";
   const API_URL =
     import.meta.env.MODE === "production"
-      ? "https://zalendovs-ffcydkb2c9f8dxb4.canadacentral-01.azurewebsites.net"
+      ? "https://zalendo-voting-system-wp-avgsbxbqfygbbfa2.canadacentral-01.azurewebsites.net"
       : "http://localhost:5002";
   https: return (
     <ElectionContext.Provider
