@@ -1,0 +1,21 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Zalendo API",
+  "license": "ISC",
+  "author": "Dev-Romm",
+  "type": "module",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "node --watch --trace-warnings --env-file=.env server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
+  }
+}

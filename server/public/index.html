@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Election API Documentation</title>
+  <style>
+    :root {
+      --primary-green: #2ecc71;
+      --dark-green: #27ae60;
+      --light-green: #58e778;
+      --gradient-start: #1abc9c;
+      --gradient-end: #16a085;
+
+      /* Light theme defaults */
+      --bg-body: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      --text-color: #333;
+      --section-bg: white;
+      --section-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      --section-hover-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      --border-color: #eee;
+      --description-color: #555;
+      --footer-color: #666;
+    }
+
+    .dark-mode {
+      --bg-body: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      --text-color: #f0f0f0;
+      --section-bg: #2a2a3a;
+      --section-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      --section-hover-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      --border-color: #444;
+      --description-color: #bbb;
+      --footer-color: #aaa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body {
+      background: var(--bg-body);
+      color: var(--text-color);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .api-section {
+      background: var(--section-bg);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--section-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .api-section:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--section-hover-shadow);
+    }
+
+    .endpoint {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .method {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-right: 1rem;
+      color: white;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .get {
+      background: var(--primary-green);
+    }
+
+    .post {
+      background: #3498db;
+    }
+
+    .path {
+      font-family: monospace;
+      font-size: 1.1rem;
+      flex-grow: 1;
+      word-break: break-all;
+    }
+
+    .description {
+      width: 100%;
+      margin-top: 0.5rem;
+      color: var(--description-color);
+    }
+
+    h2 {
+      color: var(--light-green);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--dark-green);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      color: var(--footer-color);
+    }
+
+    .theme-switcher {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .theme-switcher:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .theme-icon {
+      margin-right: 5px;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+      }
+
+      .method {
+        min-width: 60px;
+        font-size: 0.9rem;
+      }
+
+      .path {
+        font-size: 0.9rem;
+      }
+
+      .theme-switcher {
+        top: 10px;
+        right: 10px;
+        padding: 5px 8px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="light-mode">
+  <header>
+    <button class="theme-switcher" id="themeToggle">
+      <span class="theme-icon">🌙</span>
+      <span>Dark Mode</span>
+    </button>
+    <div class="container">
+      <h1>Zalendo Voting System API Documentation</h1>
+      <p class="subtitle">API endpoints for managing election system</p>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="api-section">
+      <h2>Authentication</h2>
+
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/signup</span>
+        <div class="description">
+          Register a new user account. Requires username, password, and role.
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/login</span>
+        <div class="description">
+          Authenticate a user and return an access token. Requires username and password.
+        </div>
+      </div>
+    </section>
+
+    <section class="api-section">
+      <h2>Representatives Data</h2>
+
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/facultyreps</span>
+        <div class="description">
+          Retrieve a list of all faculty representatives.
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/classreps</span>
+        <div class="description">
+          Retrieve a list of all class representatives.
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/delegates</span>
+        <div class="description">
+          Retrieve a list of all delegates.
+        </div>
+      </div>
+    </section>
+
+    <section class="api-section">
+      <h2>Voting System</h2>
+
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/vote</span>
+        <div class="description">
+          Submit a vote for a candidate. Requires candidate ID and voter details.
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/results</span>
+        <div class="description">
+          Retrieve current election results.
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/reset-results</span>
+        <div class="description">
+          Reset all election results (admin only).
+        </div>
+      </div>
+    </section>
+
+    <section class="api-section">
+      <h2>Reviews</h2>
+
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/review</span>
+        <div class="description">
+          Submit a review/feedback about the election process.
+        </div>
+      </div>
+
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/reviews</span>
+        <div class="description">
+          Retrieve all submitted reviews.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>© 2025 Zalendo System API. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // Check for saved theme preference or use preferred color scheme
+    const savedTheme = localStorage.getItem('theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    // Apply the saved theme
+    if (savedTheme === 'dark') {
+      body.classList.add('dark-mode');
+      updateToggleButton('dark');
+    } else {
+      body.classList.remove('dark-mode');
+      updateToggleButton('light');
+    }
+
+    // Toggle theme on button click
+    themeToggle.addEventListener('click', () => {
+      if (body.classList.contains('dark-mode')) {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+        updateToggleButton('light');
+      } else {
+        body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+        updateToggleButton('dark');
+      }
+    });
+
+    function updateToggleButton(theme) {
+      if (theme === 'dark') {
+        themeToggle.innerHTML = '<span class="theme-icon">☀️</span><span>Light Mode</span>';
+      } else {
+        themeToggle.innerHTML = '<span class="theme-icon">🌙</span><span>Dark Mode</span>';
+      }
+    }
+  </script>
+</body>
+
+</html>
