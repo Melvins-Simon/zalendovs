@@ -23,7 +23,7 @@ export const logText = () => {
   console.log(
     `-----🚀 Server running on --> `,
     process.env.NODE_ENV === "production"
-      ? process.env.PRODUCTION_URL.blue.underline
+      ? "https://blue-pond-092608503.6.azurestaticapps.net".blue.underline
       : `http://localhost:${process.env.PORT}/`.blue.underline
   );
   console.log("✅ Database connected successfully".green);

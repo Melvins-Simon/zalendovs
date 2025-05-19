@@ -19,6 +19,7 @@ app.use(
       process.env.CLIENT_URL,
       "http://localhost:5002",
       "http://localhost:5173",
+      "https://blue-pond-092608503.6.azurestaticapps.net",
     ],
   })
 );
